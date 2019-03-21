@@ -5,6 +5,8 @@
   "author": "suresrm <sergiozz95@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "start": "nodemon --exec babel-node server.js --presets es2015",
+    "start:prod": "babel-node server.js --presets es2015",
     "lint": "yarn lint:file .",
     "lint:file": "eslint --ext .js",
     "prettify": "yarn prettify:file '**/*.js'",
@@ -17,10 +19,13 @@
     "ws": "^6.2.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
     "eslint": "^5.0.0",
     "husky": "^1.3.1",
     "lint-staged": "^8.1.5",
     "mock-socket": "^8.0.5",
+    "nodemon": "^1.18.10",
     "prettier": "^1.16.4"
   }
 }

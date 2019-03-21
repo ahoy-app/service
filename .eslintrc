@@ -9,8 +9,8 @@ env:
   browser: true
 
 parserOptions:
-  ecmaVersion: 2017
-  sourceType: script
+  ecmaVersion: 2015
+  sourceType: module
 
 rules:
    yoda: [error, never, { exceptRange: true }]
