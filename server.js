@@ -1,8 +1,8 @@
-const dotenv = require('dotenv')
-const express = require('express')
-const http = require('http')
-const WebSocket = require('ws')
-const Rabbit = require('amqplib')
+import dotenv from 'dotenv'
+import express from 'express'
+import http from 'http'
+import WebSocket from 'ws'
+import Rabbit from 'amqplib'
 
 // Env variables
 dotenv.config()
