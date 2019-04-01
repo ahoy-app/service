@@ -11,10 +11,14 @@ const amqp_port = process.env.AMQP_PORT
 //Connect
 const amqp = Rabbit.connect(`amqp://${amqp_host}:${amqp_port}`)
 
-const createChannel = () =>
+// A Middleware that creates an AMQP channel
+const createChannel = (props, next) =>
   amqp.then(connection => {
     //When connection is ready, creeate a channel
-    return connection.createChannel()
+    connection.createChannel().then(channel => {
+      props.channel = channel
+      next()
+    })
   })
 
 export default createChannel
