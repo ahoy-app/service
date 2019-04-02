@@ -3,9 +3,14 @@ import WebSocket from 'ws'
 
 import app from './src/app'
 import onConnection from './src/ws/onConnection'
+import verifyClient from './src/ws/verifyClient'
 
 const server = http.createServer(app)
-const wss = new WebSocket.Server({ server, path: '/ws' })
+const wss = new WebSocket.Server({
+  server,
+  path: '/ws',
+  verifyClient: verifyClient,
+})
 wss.on('connection', onConnection)
 
 const server_port = process.env.SERVER_PORT

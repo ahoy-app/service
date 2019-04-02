@@ -34,9 +34,9 @@ class WebSocketController {
   }
 
   sendMessage() {
-    // var channel = document.getElementById('channel').value;
+    var room = document.getElementById('channel').value || 'main'
     var message = document.getElementById('text').value
-    this.socket.send(message)
+    this.socket.send(JSON.stringify({ room: room, message: message }))
   }
 
   showMessage(message) {
@@ -44,7 +44,10 @@ class WebSocketController {
     var response = document.getElementById('response')
     var p = document.createElement('p')
     p.style.wordWrap = 'break-word'
-    p.appendChild(document.createTextNode(message.data))
+    var content = JSON.parse(message.data)
+    p.appendChild(
+      document.createTextNode(content.room + ': ' + content.message)
+    )
     response.appendChild(p)
   }
 }

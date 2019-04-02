@@ -1,17 +1,24 @@
 import Middleware from '../utils/middleware'
 import createChannel from './amqp'
-import userInfo from './users'
 
 const onConnection = new Middleware()
 
+const extractUserInfo = (props, next) => {
+  const { req } = props
+  props.user = req.user
+  next()
+}
+
 // AMQP Channel middleware
 const createQueues = (props, next) => {
-  const { rooms, channel } = props
+  const { user, channel } = props
   Promise.all([
     channel.assertExchange('room', 'topic', { durable: true }),
     channel
       .assertQueue('', { exclusive: true, autoDelete: true })
-      .then(q => rooms.map(room => channel.bindQueue(q.queue, 'room', room))),
+      .then(q =>
+        user.rooms.map(room => channel.bindQueue(q.queue, 'room', room))
+      ),
   ]).then(next())
 }
 
@@ -31,9 +38,10 @@ const amqpConsumer = ({ ws, channel }, next) => {
 
 // WS Consume Messages
 const wsConsumer = ({ ws, channel }, next) => {
-  ws.on('message', message => {
+  ws.on('message', messageEnvelope => {
+    const { room, message } = JSON.parse(messageEnvelope)
     console.log(`Received message => ${message}`)
-    channel.publish('room', 'room.main', Buffer.from(message))
+    channel.publish('room', `room.${room}`, Buffer.from(messageEnvelope))
   })
   next()
 }
@@ -57,12 +65,28 @@ const wsOnError = ({ ws, channel }, next) => {
   next()
 }
 
-onConnection.use(userInfo, createChannel, createQueues)
+onConnection.use(extractUserInfo)
+
+onConnection.use(createChannel, createQueues)
+
+onConnection.use(({ req }, next) => {
+  console.log(req.user)
+  next()
+})
 
 onConnection.use(amqpConsumer)
 onConnection.use(wsConsumer)
 onConnection.use(wsOnClose, wsOnError)
 
 export default (ws, req) => {
-  onConnection.go({ ws, req }, ({ ws, ip }) => ws.send(`Wellcome ${ip}`))
+  onConnection.go({ ws, req }, ({ ws, user }) =>
+    ws.send(
+      JSON.stringify({
+        room: 'server',
+        message: `Wellcome ${user.id} to ${user.rooms.map(
+          room => ' ' + room.substring(5)
+        )}`,
+      })
+    )
+  )
 }
