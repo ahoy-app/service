@@ -1,6 +1,7 @@
 class WebSocketController {
   constructor() {
     this._onConnected = this._onConnected.bind(this)
+    this.showMessage = this.showMessage.bind(this)
   }
 
   _onConnected() {
@@ -38,9 +39,25 @@ class WebSocketController {
   }
 
   sendMessage() {
-    var room = document.getElementById('channel').value || 'main'
+    var room = document.getElementById('room').value || 'main'
     var message = document.getElementById('text').value
     this.socket.send(JSON.stringify({ room: room, message: message }))
+  }
+
+  setRoomOptions(rooms) {
+    console.log(rooms)
+    var room = document.getElementById('room')
+    //Clean previous options
+    while (room.firstChild) {
+      room.removeChild(room.firstChild)
+    }
+    // Add new options
+    rooms.forEach(r => {
+      var option = document.createElement('option')
+      option.value = r
+      option.text = r
+      room.appendChild(option)
+    })
   }
 
   showMessage(message) {
@@ -49,6 +66,15 @@ class WebSocketController {
     var p = document.createElement('p')
     p.style.wordWrap = 'break-word'
     var content = JSON.parse(message.data)
+
+    if (content.room === 'server') {
+      var rooms = content.message
+        .split('=>')[1]
+        .split(',')
+        .map(r => r.trim())
+      this.setRoomOptions(rooms)
+    }
+
     p.appendChild(
       document.createTextNode(content.room + ': ' + content.message)
     )

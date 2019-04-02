@@ -19,7 +19,6 @@ const decodeJWT = (props, next) => {
   const { req, done } = props
   const url = new URL(req.url, 'ws://location/')
   const token = url.searchParams.get('token')
-  console.log(token)
   if (token) {
     verifyToken(token, (err, decoded) => {
       if (err) {
