@@ -1,66 +1,42 @@
 import { verifyToken } from '../auth/jwt'
 import Middleware from '../utils/middleware'
+import { URL } from 'url'
 
 const verifyClient = new Middleware()
 
-function* userGenerator() {
-  while (true) {
-    yield 'Mike'
-    yield 'Tom'
-    yield 'Hannah'
-    yield 'Peter'
-    yield 'Lucas'
-    yield 'Gloria'
-    yield 'Ember'
-    yield 'Nei'
+const getRoom = user => {
+  switch (user) {
+    case 'mike':
+      return ['room.main', 'room.football', 'room.hannah-mike']
+    case 'tom':
+      return ['room.main', 'room.football', 'room.']
+    case 'hannah':
+      return ['room.main', 'room.football', 'room.hannah-mike']
   }
 }
-function* roomGenerator() {
-  while (true) {
-    yield 'room.football'
-    yield 'room.music'
-    yield 'room.dev'
-  }
-}
-
-const users = userGenerator()
-const rooms = roomGenerator()
-const setFixUser = ({ req }, next) => {
-  console.log('Authenticating')
-  req.user = {
-    id: users.next().value,
-    rooms: ['room.main', rooms.next().value],
-  }
-  next()
-}
-verifyClient.use(setFixUser)
-
-// const forbidAll = ({ done }) => {
-//   done(false, 403, 'No user authentication')
-// }
-// verifyClient.use(forbidAll)
 
 const decodeJWT = (props, next) => {
-  const { req, ws } = props
-  const token = req.headers['Authorization']
-    ? req.headers['Authorization'].substring(7)
-    : undefined
+  const { req, done } = props
+  const url = new URL(req.url, 'ws://location/')
+  const token = url.searchParams.get('token')
+  console.log(token)
   if (token) {
     verifyToken(token, (err, decoded) => {
       if (err) {
-        //invalid
+        done(false, 403, 'No user authentication')
       } else {
         // if everything is good, save to request for use in other routes
-        req.user = decoded
+        const { user: name } = decoded
+        req.user = { name, rooms: getRoom(name) }
         next()
       }
     })
   } else {
-    console.log('No credentials')
-    ws.send('No credentials')
-    ws.close()
+    done(false, 403, 'No user authentication')
   }
 }
+
+verifyClient.use(decodeJWT)
 
 // Function structure needed by WebSocket.Server
 export default ({ req }, done) => {

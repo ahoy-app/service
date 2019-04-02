@@ -60,7 +60,7 @@ export default (ws, req) => {
     ws.send(
       JSON.stringify({
         room: 'server',
-        message: `Wellcome ${user.id} to ${user.rooms.map(
+        message: `Wellcome ${user.name} to ${user.rooms.map(
           room => ' ' + room.substring(5)
         )}`,
       })

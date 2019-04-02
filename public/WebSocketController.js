@@ -18,11 +18,15 @@ class WebSocketController {
   }
 
   connect() {
-    this.socket = new WebSocket('ws://localhost:8080/ws')
-    this.socket.onopen = this._onConnected
-    this.socket.onmessage = this.showMessage
-    this.socket.onclose = () => this.setConnected(false)
-    console.log('Connection established')
+    if (window.token) {
+      this.socket = new WebSocket(
+        `ws://localhost:8080/ws?token=${window.token}`
+      )
+      this.socket.onopen = this._onConnected
+      this.socket.onmessage = this.showMessage
+      this.socket.onclose = () => this.setConnected(false)
+      console.log('Connection established')
+    }
   }
 
   disconnect() {
