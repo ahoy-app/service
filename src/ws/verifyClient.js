@@ -62,6 +62,7 @@ const decodeJWT = (props, next) => {
   }
 }
 
+// Function structure needed by WebSocket.Server
 export default ({ req }, done) => {
   verifyClient.go({ req, done }, () => {
     done(true)
