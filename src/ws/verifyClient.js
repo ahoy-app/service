@@ -7,11 +7,11 @@ const verifyClient = new Middleware()
 const getRoom = user => {
   switch (user) {
     case 'mike':
-      return ['room.main', 'room.football', 'room.hannah-mike']
+      return ['room.main', 'room.dev', 'room.hannah-mike']
     case 'tom':
-      return ['room.main', 'room.football', 'room.']
+      return ['room.main', 'room.dev', 'room.dea']
     case 'hannah':
-      return ['room.main', 'room.football', 'room.hannah-mike']
+      return ['room.main', 'room.dev', 'room.hannah-mike']
   }
 }
 

@@ -27,10 +27,14 @@ const amqpConsumerCallback = ({ ws, channel }, message) => {
 onConnection.use(amqpConsumer(amqpConsumerCallback))
 
 // WS Consume Messages
-const wsConsumerCallback = ({ channel }, messageEnvelope) => {
+const wsConsumerCallback = ({ channel, user }, messageEnvelope) => {
   const { room, message } = JSON.parse(messageEnvelope)
   console.log(`Received message => ${message}`)
-  channel.publish('room', `room.${room}`, Buffer.from(messageEnvelope))
+  channel.publish(
+    'room',
+    `room.${room}`,
+    Buffer.from(JSON.stringify({ room, message, from: user.name }))
+  )
 }
 onConnection.use(wsConsumer(wsConsumerCallback))
 
@@ -60,7 +64,7 @@ export default (ws, req) => {
     ws.send(
       JSON.stringify({
         room: 'server',
-        message: `Wellcome ${user.name} to => ${user.rooms.map(
+        message: `Wellcome @${user.name} to => ${user.rooms.map(
           room => ' ' + room.substring(5)
         )}`,
       })

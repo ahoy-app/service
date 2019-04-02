@@ -76,7 +76,9 @@ class WebSocketController {
     }
 
     p.appendChild(
-      document.createTextNode(content.room + ': ' + content.message)
+      document.createTextNode(
+        `#${content.room}: @${content.from || 'admin'}:  ${content.message}`
+      )
     )
     response.appendChild(p)
   }
