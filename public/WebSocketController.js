@@ -20,9 +20,9 @@ class WebSocketController {
 
   connect() {
     if (window.token) {
-      this.socket = new WebSocket(
-        `ws://localhost:8080/ws?token=${window.token}`
-      )
+      const host = window.location.host
+      console.log(host)
+      this.socket = new WebSocket(`ws://${host}/ws?token=${window.token}`)
       this.socket.onopen = this._onConnected
       this.socket.onmessage = this.showMessage
       this.socket.onclose = () => this.setConnected(false)
