@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>WebSocket Messaging</title>
+    <script src="WebSocketController.js"></script>
+    <script src="LoginController.js"></script>
+  </head>
+  <body onload="login.logout(); webSocket.disconnect()">
+    <div>
+      <div>
+        <input type="text" id="user" placeholder="Select a name" />
+        <button id="login" onclick="login.login();">Log In</button>
+        <button id="logout" onclick="login.logout();">Log Out</button>
+      </div>
+      <div id="app">
+        <div>
+          <button id="connect" onclick="webSocket.connect();">Connect</button>
+          <button
+            id="disconnect"
+            disabled="disabled"
+            onclick="webSocket.disconnect();"
+          >
+            Disconnect
+          </button>
+        </div>
+        <br />
+        <div id="mural">
+          <select id="room"> </select>
+          <input type="text" id="text" placeholder="Write a message..." />
+          <button id="sendMessage" onclick="webSocket.sendMessage();">
+            Send
+          </button>
+          <p id="response"></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
