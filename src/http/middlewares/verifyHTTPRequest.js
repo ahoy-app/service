@@ -1,4 +1,4 @@
-import verifyClient from '../auth/verifyClient'
+import verifyClient from '../../auth/verifyClient'
 
 const getToken = req => {
   if (

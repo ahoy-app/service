@@ -1,10 +1,10 @@
 import sinon from 'sinon'
 import { assert, expect } from 'chai'
 
-import { mockRequest, mockResponse } from '../utils/mock-req-res'
+import { mockRequest, mockResponse } from '../../utils/mock-req-res'
 
-import verifyHTTPRequest from '../../src/http/verifyHTTPRequest'
-import { signToken } from '../../src/auth/jwt'
+import verifyHTTPRequest from '../../../src/http/middlewares/verifyHTTPRequest'
+import { signToken } from '../../../src/auth/jwt'
 
 describe('HTTP Request verification', () => {
   it('Should reject no header', () => {

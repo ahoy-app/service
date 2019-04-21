@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon --exec babel-node src/mono-server.js",
     "start:prod": "babel-node server.js --presets es2015",
-    "test": "mocha tests/* --require @babel/register",
+    "test": "mocha tests/* --recursive --require @babel/register",
     "lint": "yarn lint:file .",
     "lint:file": "eslint --ext .js",
     "prettify": "yarn prettify:file '**/*.js'",
