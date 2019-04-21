@@ -1,6 +1,5 @@
 import { verifyToken } from '../auth/jwt'
 import Middleware from '../utils/middleware'
-import { URL } from 'url'
 
 const verifyClient = new Middleware()
 
@@ -16,30 +15,27 @@ const getRoom = user => {
 }
 
 const decodeJWT = (props, next) => {
-  const { req, done } = props
-  const url = new URL(req.url, 'ws://location/')
-  const token = url.searchParams.get('token')
+  const { req, token, done } = props
+
   if (token) {
     verifyToken(token, (err, decoded) => {
       if (err) {
-        done(false, 403, 'No user authentication')
+        done(false)
       } else {
         // if everything is good, save to request for use in other routes
         const { user: name } = decoded
         req.user = { name, rooms: getRoom(name) }
-        next()
+        next(true)
       }
     })
   } else {
-    done(false, 403, 'No user authentication')
+    done(false)
   }
 }
 
 verifyClient.use(decodeJWT)
 
-// Function structure needed by WebSocket.Server
-export default ({ req }, done) => {
-  verifyClient.go({ req, done }, () => {
+export default (req, token, done) =>
+  verifyClient.go({ req, token, done }, () => {
     done(true)
   })
-}
