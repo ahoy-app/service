@@ -9,7 +9,13 @@
 Run a Rabbit instance
 
 ```sh
-docker run --rm -p 5672:5672 rabbitmq
+docker run --rm -p 5672:5672 rabbitmq:3
+```
+
+Run a MongoDB instance
+
+```sh
+docker run --rm -p 27017:27017 mongo:4
 ```
 
 ### Config
