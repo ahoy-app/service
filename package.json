@@ -8,6 +8,7 @@
     "start": "nodemon --exec babel-node src/mono-server.js",
     "start:prod": "babel-node server.js --presets es2015",
     "test": "nodemon --exec mocha tests/* --recursive --require @babel/register",
+    "test:ci": "mocha tests/* --recursive --require @babel/register",
     "lint": "yarn lint:file .",
     "lint:file": "eslint --ext .js",
     "prettify": "yarn prettify:file '**/*.js'",
