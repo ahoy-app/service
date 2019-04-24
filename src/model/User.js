@@ -22,14 +22,15 @@ const User = new mongoose.Schema({
 })
 
 User.methods.findRooms = function(cb) {
-  this.model(ROOM_MODEL_NAME).find(
-    {
-      members: this.name,
-    },
-    function(err, val) {
-      cb(!!val)
-    }
-  )
+  const promise = this.model(ROOM_MODEL_NAME).find({
+    members: this._id,
+  })
+
+  if (cb) {
+    promise.then(cb)
+  } else {
+    return promise
+  }
 }
 
 export default mongoose.model(USER_MODEL_NAME, User)

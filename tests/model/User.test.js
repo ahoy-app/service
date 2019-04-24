@@ -80,15 +80,16 @@ describe('User model', () => {
       sinon.restore()
     })
 
-    it('Should call find to find the user by its name', () => {
+    it('Should call find to find the user by its name', async () => {
       sinon.stub(RoomModel, 'find')
-      const user = new User({ name: 'Mike' })
 
-      user.findRooms(() => {})
+      const user = new User({ _id: 'mike', name: 'Mike' })
+
+      await user.findRooms()
 
       assert(
         RoomModel.find.calledWith({
-          members: 'Mike',
+          members: 'mike',
         })
       )
     })
