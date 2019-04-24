@@ -26,7 +26,7 @@ function validateAdmin(admin) {
 function validateMembers(members) {
   switch (this.type) {
     case ROOM_TYPE_GROUP:
-      return members.length === 0
+      return members.length >= 0
     case ROOM_TYPE_DUO:
       return (
         members.length === 2 && provided(members[0]) && provided(members[1])
@@ -57,6 +57,14 @@ const RoomSchema = new mongoose.Schema({
     validate: [validateMembers, 'Members list depends on room type'],
   },
 })
+
+RoomSchema.methods.addUser = function(user) {
+  if (!this.members.includes(user)) {
+    this.members.push(user)
+  } else {
+    console.warn('Trying to include an existing user in a room')
+  }
+}
 
 export const RoomModel = mongoose.model(ROOM_MODEL_NAME, RoomSchema)
 

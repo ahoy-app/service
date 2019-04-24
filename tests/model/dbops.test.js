@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import mdb from '../../src/config/mdb'
 import User from '../../src/model/User'
+import Message from '../../src/model/Message'
 import { RoomModel, createDuoRoom, createGroupRoom } from '../../src/model/Room'
 
 describe.skip('Db ops', () => {
@@ -30,15 +31,19 @@ describe.skip('Db ops', () => {
       await user.save()
 
       const result = await User.findById(user._id)
+
       expect(result).to.exist
       expect(result).to.include.keys('_doc')
 
-      expect(result._doc).to.have.property('_id', 'mike')
-      expect(result._doc).to.have.property('name', 'Mike')
-      expect(result._doc).to.have.property('role', 'user')
+      expect(result._doc).to.have.property('_id', user._id)
+      expect(result._doc).to.have.property('name', user.name)
+      expect(result._doc).to.have.property('role', user.role)
       expect(result._doc).to.have.property('crypto')
-      expect(result._doc.crypto).to.have.property('public', 'aaa')
-      expect(result._doc.crypto).to.have.property('private', 'aaa')
+      expect(result._doc.crypto).to.have.property('public', user.crypto.public)
+      expect(result._doc.crypto).to.have.property(
+        'private',
+        user.crypto.private
+      )
     })
 
     it('Query', async () => {
@@ -104,7 +109,85 @@ describe.skip('Db ops', () => {
         expect(result).to.include.keys('_doc')
 
         expect(result._doc).to.have.property('_id', room._id)
+        expect(result._doc).to.have.property('members')
+        expect(result._doc.members).to.have.length(2)
       })
+    })
+    describe('Group Room', () => {
+      let room
+
+      beforeEach(() => {
+        room = createGroupRoom({ admin: 'mike', name: 'football' })
+      })
+
+      afterEach(() => {
+        room.delete()
+      })
+
+      it('Saves and finds', async () => {
+        await room.save()
+
+        const result = await RoomModel.findById(room._id)
+
+        expect(result).to.exist
+        expect(result).to.include.keys('_doc')
+
+        expect(result._doc).to.have.property('_id', room._id)
+        expect(result._doc).to.have.property('members')
+        expect(result._doc.members).to.have.length(0)
+      })
+
+      it('Adds a user to a group', async () => {
+        await room.save()
+
+        room.addUser('tom')
+        room.addUser('hannah')
+        room.addUser('fluffy')
+
+        expect(room.members).to.have.length(3)
+
+        await room.save()
+
+        const result = await RoomModel.findById(room._id)
+
+        expect(result).to.exist
+        expect(result).to.include.keys('_doc')
+
+        expect(result._doc).to.have.property('_id', room._id)
+        expect(result._doc).to.have.property('members')
+        expect(result._doc.members).to.have.length(3)
+      })
+    })
+  })
+  describe('Message', () => {
+    const messageFields = {
+      _id: 'aseifuq349f',
+      from: 'mike',
+      to: 'tom',
+      type: 'text',
+      content: 'Hi dude',
+    }
+
+    let message
+
+    beforeEach(() => {
+      message = new Message(messageFields)
+    })
+
+    afterEach(() => {
+      message.delete()
+    })
+
+    it('Saves and finds', async () => {
+      await message.save()
+
+      const result = await Message.findById(message._id)
+
+      expect(result).to.exist
+      expect(result).to.include.keys('_doc')
+
+      expect(result._doc).to.have.property('_id', message._id)
+      expect(result._doc).to.have.property('content', message.content)
     })
   })
 })
