@@ -1,14 +1,11 @@
-import amqp from '../config/amqp'
-
 // A Middleware that creates an AMQP channel
-export const createChannel = (props, next) =>
-  amqp.then(connection => {
-    //When connection is ready, creeate a channel
-    connection.createChannel().then(channel => {
-      props.channel = channel
-      next()
-    })
+export const createChannel = (props, next) => {
+  const { amqp } = props
+  amqp.createChannel().then(channel => {
+    props.channel = channel
+    next()
   })
+}
 
 export const createQueues = (props, next) => {
   const { user, channel } = props // TODO: Fix this coupling

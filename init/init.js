@@ -3,7 +3,7 @@ import mdb from '../src/config/mdb'
 import User from '../src/model/User'
 import { createGroupRoom } from '../src/model/Room'
 
-mdb.then(async () => {
+mdb().then(async () => {
   try {
     const userBase = { role: 'user', crypto: { public: 'aaa', private: 'aaa' } }
 

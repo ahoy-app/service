@@ -70,8 +70,8 @@ const wsOnError = ({ ws, channel }, next) => {
 onConnection.use(wsOnClose, wsOnError)
 
 // Function structure needed by WebSocket on('connection')
-export default (ws, req) => {
-  onConnection.go({ ws, req }, ({ ws, user }) =>
+export default extras => (ws, req) => {
+  onConnection.go({ ws, req, ...extras }, ({ ws, user }) =>
     ws.send(
       JSON.stringify({
         room: 'server',

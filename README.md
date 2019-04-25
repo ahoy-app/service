@@ -34,6 +34,7 @@ AMQP_PASS=guest
 
 MDB_HOST=localhost
 MDB_PORT=27017
+MDB_NAME=ahoy
 MDB_USER=
 MDB_PASS=
 ```

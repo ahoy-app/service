@@ -6,7 +6,7 @@ import { RoomModel, createDuoRoom, createGroupRoom } from '../../src/model/Room'
 
 describe.skip('Db ops', () => {
   before(done => {
-    mdb.then(() => done())
+    mdb().then(() => done())
   })
 
   describe('User', () => {
