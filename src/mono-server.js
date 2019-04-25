@@ -3,11 +3,19 @@ import http from 'http'
 import app from './http/app'
 import { createWSServer } from './ws/app'
 
-const server = http.createServer(app)
-createWSServer(server)
+import mdbPromise from './config/mdb'
+import amqpPromise from './config/amqp'
 
-const server_port = process.env.SERVER_PORT
+Promise.all([mdbPromise, amqpPromise]).then(([mdb_conn, amqp_conn]) => {
+  app.set('mdb_connection', mdb_conn)
+  app.set('amqp_connection', amqp_conn)
 
-server.listen(server_port || 3000, () => {
-  console.log(`Server started on port ${server.address().port}`)
+  const server = http.createServer(app)
+  createWSServer(server, mdb_conn, amqp_conn)
+
+  const server_port = process.env.SERVER_PORT
+
+  server.listen(server_port || 3000, () => {
+    console.log(`Server started on port ${server.address().port}`)
+  })
 })
