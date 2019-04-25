@@ -34,11 +34,9 @@ describe('Client verification', () => {
     const callback = sinon.fake()
 
     verifyClient(req, token, callback)
-    const { name, rooms } = req.user
 
-    assert(callback.calledWith(true))
-    expect(name).to.be.undefined
-    expect(rooms).to.be.undefined
+    assert(callback.calledWith(false))
+    expect(req.userId).to.not.exist
   })
 
   it('Should accept a valid token and add a correct user to req', () => {
@@ -47,10 +45,8 @@ describe('Client verification', () => {
     const callback = sinon.fake()
 
     verifyClient(req, token, callback)
-    const { name, rooms } = req.user
 
     assert(callback.calledWith(true))
-    expect(name).to.equal('mike')
-    expect(rooms).to.be.a('array')
+    expect(req.userId).to.equals('mike')
   })
 })

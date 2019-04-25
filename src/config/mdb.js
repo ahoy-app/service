@@ -9,7 +9,7 @@ const mdb_name = process.env.MDB_NAME
 // const mdb_user = process.env.MDB_USER
 // const mdb_pass = process.env.MDB_PASS
 
-mongoose.connect(`mongodb://${mdb_host}:${mdb_port}/${mdb_name}`, {
-  useNewUrlParser: true,
-})
-export default mongoose.connection
+export default mongoose.connect(
+  `mongodb://${mdb_host}:${mdb_port}/${mdb_name}`,
+  { useNewUrlParser: true }
+)

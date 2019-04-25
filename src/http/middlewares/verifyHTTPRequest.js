@@ -11,7 +11,7 @@ const getToken = req => {
   }
 }
 
-// Function structure needed by WebSocket.Server
+// Function structure needed by Express
 export default (req, res, next) => {
   const token = getToken(req)
 

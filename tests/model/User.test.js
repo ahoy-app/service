@@ -89,11 +89,7 @@ describe('User model', () => {
 
       await user.findRooms()
 
-      assert(
-        RoomModel.find.calledWith({
-          members: 'mike',
-        })
-      )
+      assert(RoomModel.find.calledOnce)
     })
   })
 })

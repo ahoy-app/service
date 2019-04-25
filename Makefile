@@ -1,8 +1,18 @@
-init: rabbit mongo start
+.PHONY: init
+
+init:
+	yarn
+
+run: rabbit mongo start
 
 dev: rabbit mongo test
 
+demo: docker.clean rabbit mongo
+	yarn initDb
+
 pre-commit: docker.clean prettify lint test.ci
+	# This is not executed by hooks.
+	# Just helps developer to automate clean, lint and test
 
 start:
 	yarn start

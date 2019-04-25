@@ -23,7 +23,7 @@ const User = new mongoose.Schema({
 
 User.methods.findRooms = function(cb) {
   const promise = this.model(ROOM_MODEL_NAME).find({
-    members: this._id,
+    $or: [{ members: this._id }, { admin: this._id }],
   })
 
   if (cb) {

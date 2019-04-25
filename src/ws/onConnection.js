@@ -2,21 +2,32 @@ import Middleware from '../utils/middleware'
 import { amqpConsumer, createChannel, createQueues } from './amqp'
 import { wsConsumer } from './ws'
 
+import User from '../model/User'
+
 const onConnection = new Middleware()
 
 // Gets user info from req object (provided by auth middleware)
 // and puts it in the props scope
 const extractUserInfo = (props, next) => {
   const { req } = props
-  props.user = req.user
-  next()
+  User.findById(req.userId)
+    .then(user => {
+      props.user = user
+      next()
+    })
+    .catch(() => {
+      console.warn('User not registered')
+    })
 }
 
-onConnection.use(extractUserInfo)
-onConnection.use(({ req }, next) => {
-  console.log(req.user)
-  next()
-})
+const extractUserRooms = (props, next) => {
+  props.user.findRooms().then(rooms => {
+    props.user.rooms = rooms
+    next()
+  })
+}
+
+onConnection.use(extractUserInfo, extractUserRooms)
 
 onConnection.use(createChannel, createQueues)
 
@@ -65,7 +76,7 @@ export default (ws, req) => {
       JSON.stringify({
         room: 'server',
         message: `Wellcome @${user.name} to => ${user.rooms.map(
-          room => ' ' + room.substring(5)
+          room => room._id
         )}`,
       })
     )

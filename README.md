@@ -31,6 +31,11 @@ AMQP_HOST=localhost
 AMQP_PORT=5672
 AMQP_USER=guest
 AMQP_PASS=guest
+
+MDB_HOST=localhost
+MDB_PORT=27017
+MDB_USER=
+MDB_PASS=
 ```
 
 ### Run

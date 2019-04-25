@@ -3,32 +3,25 @@ import Middleware from '../utils/middleware'
 
 const verifyClient = new Middleware()
 
-const getRoom = user => {
-  switch (user) {
-    case 'mike':
-      return ['room.main', 'room.dev', 'room.hannah-mike']
-    case 'tom':
-      return ['room.main', 'room.dev', 'room.dea']
-    case 'hannah':
-      return ['room.main', 'room.dev', 'room.hannah-mike']
-  }
-}
-
 const decodeJWT = (props, next) => {
   const { req, token, done } = props
 
   if (token) {
     verifyToken(token, (err, decoded) => {
       if (err) {
+        console.warn('Invalid Token')
         done(false)
       } else {
-        // if everything is good, save to request for use in other routes
-        const { user: name } = decoded
-        req.user = { name, rooms: getRoom(name) }
-        next(true)
+        if (decoded.user) {
+          req.userId = decoded.user
+          next()
+        } else {
+          done(false)
+        }
       }
     })
   } else {
+    console.warn('No token provided')
     done(false)
   }
 }

@@ -9,6 +9,7 @@
     "start:prod": "babel-node server.js --presets es2015",
     "test": "nodemon --exec mocha tests/* --recursive --require @babel/register",
     "test:ci": "mocha tests/* --recursive --require @babel/register",
+    "initDb": "babel-node init/init.js",
     "lint": "yarn lint:file .",
     "lint:file": "eslint --ext .js",
     "prettify": "yarn prettify:file '**/*.js'",

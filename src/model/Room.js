@@ -81,7 +81,7 @@ export const createDuoRoom = ({ members = [] }) => {
 
 export const createGroupRoom = ({ admin, name }) => {
   return RoomModel({
-    _id: `hash-random`,
+    _id: `hash-${name}`,
     type: ROOM_TYPE_GROUP,
     name: name,
     admin: [admin],

@@ -14,12 +14,16 @@ export const createQueues = (props, next) => {
   const { user, channel } = props // TODO: Fix this coupling
   Promise.all([
     channel.assertExchange('room', 'topic', { durable: true }),
-    channel
-      .assertQueue('', { exclusive: true, autoDelete: true })
-      .then(q =>
-        user.rooms.map(room => channel.bindQueue(q.queue, 'room', room))
-      ),
-  ]).then(next())
+    channel.assertQueue('', { exclusive: true, autoDelete: true }),
+  ])
+    .then(([, q]) => {
+      Promise.all[
+        user.rooms.map(room =>
+          channel.bindQueue(q.queue, 'room', `room.${room._id}`)
+        )
+      ]
+    })
+    .then(next)
 }
 
 // Curring a middleware with a callback onMessage
