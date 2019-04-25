@@ -2,7 +2,7 @@ init: rabbit mongo start
 
 dev: rabbit mongo test
 
-pre-commit: docker.clean prettify lint test
+pre-commit: docker.clean prettify lint test.ci
 
 start:
 	yarn start

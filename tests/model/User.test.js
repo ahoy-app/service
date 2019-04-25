@@ -19,6 +19,7 @@ describe('User model', () => {
     })
 
     it('Should be invalid if no name is provided', done => {
+      // eslint-disable-next-line no-unused-vars
       const { name, ...invalidUser } = validUser
       var user = new User(invalidUser)
 
@@ -38,6 +39,7 @@ describe('User model', () => {
     })
 
     it('Should be invalid if no role is provided', done => {
+      // eslint-disable-next-line no-unused-vars
       const { role, ...invalidUser } = validUser
       var user = new User(invalidUser)
 

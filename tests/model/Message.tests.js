@@ -28,6 +28,7 @@ describe('Message model', () => {
     })
 
     it('Should be invalid if no from is provided', done => {
+      // eslint-disable-next-line no-unused-vars
       const { from, ...invalidTextMessage } = validTextMessage
       var message = Message({ ...invalidTextMessage })
 
@@ -47,6 +48,7 @@ describe('Message model', () => {
     })
 
     it('Should be invalid if no to is provided', done => {
+      // eslint-disable-next-line no-unused-vars
       const { to, ...invalidTextMessage } = validTextMessage
       var message = Message({ ...invalidTextMessage })
 
@@ -66,6 +68,7 @@ describe('Message model', () => {
     })
 
     it('Should be invalid if no type is provided', done => {
+      // eslint-disable-next-line no-unused-vars
       const { type, ...invalidTextMessage } = validTextMessage
       var message = Message({ ...invalidTextMessage })
 
@@ -85,6 +88,7 @@ describe('Message model', () => {
     })
 
     it('Should be invalid if no content is provided', done => {
+      // eslint-disable-next-line no-unused-vars
       const { content, ...invalidTextMessage } = validTextMessage
       var message = Message({ ...invalidTextMessage })
 
