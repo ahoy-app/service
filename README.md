@@ -9,7 +9,13 @@
 Run a Rabbit instance
 
 ```sh
-docker run --rm -p 5672:5672 rabbitmq
+docker run --rm -p 5672:5672 rabbitmq:3
+```
+
+Run a MongoDB instance
+
+```sh
+docker run --rm -p 27017:27017 mongo:4
 ```
 
 ### Config
@@ -25,6 +31,12 @@ AMQP_HOST=localhost
 AMQP_PORT=5672
 AMQP_USER=guest
 AMQP_PASS=guest
+
+MDB_HOST=localhost
+MDB_PORT=27017
+MDB_NAME=ahoy
+MDB_USER=
+MDB_PASS=
 ```
 
 ### Run

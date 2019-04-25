@@ -15,6 +15,7 @@ describe('HTTP Request verification', () => {
     verifyHTTPRequest(req, res, next)
 
     assert(res.status.calledWith(403))
+    assert(next.notCalled)
     assert(res.send.calledOnce)
     expect(req.user).to.be.undefined
   })
@@ -30,10 +31,11 @@ describe('HTTP Request verification', () => {
 
     assert(res.status.calledWith(403))
     assert(res.send.calledOnce)
+    assert(next.notCalled)
     expect(req.user).to.be.undefined
   })
 
-  it('Should accept a valid token', () => {
+  it('Should not accept a valid token without user field', () => {
     const token = signToken({})
     const req = mockRequest({ headers: { authorization: `Bearer ${token}` } })
     const res = mockResponse()
@@ -41,7 +43,10 @@ describe('HTTP Request verification', () => {
 
     verifyHTTPRequest(req, res, next)
 
-    assert(next.calledOnce)
+    assert(res.status.calledWith(403))
+    assert(res.send.calledOnce)
+    assert(next.notCalled)
+    expect(req.user).to.be.undefined
   })
 
   it('Should accept a valid token and add a correct user to req', () => {
@@ -51,10 +56,8 @@ describe('HTTP Request verification', () => {
     const next = sinon.fake()
 
     verifyHTTPRequest(req, res, next)
-    const { name, rooms } = req.user
 
     assert(next.calledOnce)
-    expect(name).to.equal('mike')
-    expect(rooms).to.be.a('array')
+    expect(req.userId).to.equals('mike')
   })
 })

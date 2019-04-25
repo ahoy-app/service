@@ -25,27 +25,14 @@ describe('Web Socket Connection verification', () => {
     assert(done.calledWith(false, 403))
   })
 
-  it('Should accept verification with valid token', () => {
+  it('Should not accept verification with valid token without user', () => {
     const token = signToken({})
     const req = { url: `ws://local.domain:0000/ws?token=${token}` }
     const done = sinon.fake()
 
     verifyWSConnection({ req }, done)
 
-    assert(done.calledWith(true))
-  })
-
-  it('Should accept verification with valid token but not add a valid user to req', () => {
-    const token = signToken({})
-    const req = { url: `ws://local.domain:0000/ws?token=${token}` }
-    const done = sinon.fake()
-
-    verifyWSConnection({ req }, done)
-    const { name, rooms } = req.user
-
-    assert(done.calledWith(true))
-    expect(name).to.be.undefined
-    expect(rooms).to.be.undefined
+    assert(done.calledWith(false))
   })
 
   it('Should accept verification with valid token and add a valid user to req', () => {
@@ -54,10 +41,8 @@ describe('Web Socket Connection verification', () => {
     const done = sinon.fake()
 
     verifyWSConnection({ req }, done)
-    const { name, rooms } = req.user
 
     assert(done.calledWith(true))
-    expect(name).to.equal('mike')
-    expect(rooms).to.be.a('array')
+    expect(req.userId).to.equal('mike')
   })
 })
