@@ -37,6 +37,10 @@ mongo:
 	docker run --rm -p 27017:27017 --name ahoy-mongo -d mongo:4
 	touch mongo
 
+oauth:
+	docker run --rm -p 80:80 --name gitlab --hostname localhost -d gitlab/gitlab-ce:latest
+	touch oauth
+
 docker.logs:
 	-docker logs ahoy-rabbit > rabbit
 	-docker logs ahoy-mongo > mongo
@@ -45,3 +49,4 @@ docker.clean:
 	-docker stop ahoy-rabbit ahoy-mongo
 	-rm rabbit
 	-rm mongo
+	-rm oauth

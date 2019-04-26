@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.2",
     "morgan": "^1.9.1",
+    "node-fetch": "^2.3.0",
     "ws": "^6.2.0"
   },
   "devDependencies": {

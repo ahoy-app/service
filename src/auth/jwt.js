@@ -15,3 +15,5 @@ export const signToken = payload => {
 export const verifyToken = (token, callback) => {
   jwt.verify(token, jwt_secret, callback)
 }
+
+export const decodeToken = token => jwt.decode(token, { complete: true })
