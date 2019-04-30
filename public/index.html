@@ -3,13 +3,14 @@
     <title>WebSocket Messaging</title>
     <script src="WebSocketController.js"></script>
     <script src="LoginController.js"></script>
+    <script src="oAuth.js"></script>
   </head>
   <body onload="login.logout(); webSocket.disconnect()">
     <div>
       <div>
-        <a href="/auth.html">
-          Login
-        </a>
+        <button id="login with github" onclick="login.ghAuth();">
+          Log In with GitHub
+        </button>
       </div>
       <div>
         <input type="text" id="user" placeholder="Select a name" />

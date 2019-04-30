@@ -22,15 +22,32 @@ export const login = async (req, res) => {
 export const oauth_redirect = async (req, res) => {
   try {
     console.log('Getting token')
-    const token = await getToken(req.query.code)
-    const user_email = await getUserEmail(token)
-    console.log(user_email)
-    const user_info = await getUserInfo(token)
+    const gh_token = await getToken(req.query.code)
+    const user_email = await getUserEmail(gh_token)
 
-    // const user = await User.findById(userId)
-
-    res.status(200).send(`Wellcome ${user_info.login} ${user_email}`)
+    const user = await User.findById(user_email)
+    if (user) {
+      // If user was already registered
+      console.log('User authenticated: ', user_email)
+    } else {
+      // If new user in the system
+      const user_info = await getUserInfo(gh_token)
+      const userBase = {
+        role: 'user',
+        crypto: { public: 'public-key', private: 'private-hashed-key' },
+      }
+      const user = new User({
+        _id: user_email,
+        name: user_info.login,
+        ...userBase,
+      })
+      await user.save()
+      console.log('New user created: ', user_email)
+    }
+    const token = signToken({ user: user._id })
+    res.redirect(`/callback.html?access_token=${token}`)
   } catch (error) {
+    console.log(error)
     res.status(404).send('Error authenticating')
   }
 }
