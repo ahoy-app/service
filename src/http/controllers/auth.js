@@ -32,10 +32,10 @@ export const oauth_redirect = async (req, res) => {
     const gh_token = await getToken(req.query.code) // Fetch token from GitHub API
     const user_email = await getUserEmail(gh_token) // Fetch user email from GitHub API
 
-    const user = await User.findById(user_email)
+    let user = await User.findById(user_email)
     if (user) {
       // If user was already registered
-      console.log('User authenticated: ', user_email)
+      console.log('User authenticated: ', user._id)
     } else {
       // If new user in the system
       const user_info = await getUserInfo(gh_token)
@@ -43,13 +43,13 @@ export const oauth_redirect = async (req, res) => {
         role: 'user',
         crypto: { public: 'public-key', private: 'private-hashed-key' },
       }
-      const user = new User({
+      user = new User({
         _id: user_email,
         name: user_info.login,
         ...userBase,
       })
-      await user.save()
-      console.log('New user created: ', user_email)
+      user = await user.save()
+      console.log('New user created: ', user._id)
     }
     const token = signToken({ user: user._id })
     res.redirect(`/callback.html?access_token=${token}`)
@@ -58,7 +58,3 @@ export const oauth_redirect = async (req, res) => {
     res.status(404).send('Error authenticating')
   }
 }
-
-// export const auth_redirect = async (req, res) => {
-//
-// }

@@ -19,7 +19,7 @@ export default (req, res, next) => {
     if (success) {
       next()
     } else {
-      res.status(403).send(JSON.stringify({ error: 'Invalid Token' }))
+      res.status(403).send('<a href="/">Log in</a>')
     }
   })
 }
