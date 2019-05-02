@@ -11,9 +11,11 @@ class LoginController {
 
   login() {
     const user = document.getElementById('user').value
+    const pass = document.getElementById('pass').value
     const body = {
       id: '',
       user: user,
+      pass: pass,
     }
 
     fetch('/login', {

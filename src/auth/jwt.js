@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 //Config
 dotenv.config()
 
-const jwt_secret = process.env.JWT_SECRET
+export const jwt_secret = process.env.JWT_SECRET
 
 export const signToken = payload => {
   return jwt.sign(payload, jwt_secret, {
