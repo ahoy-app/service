@@ -11,9 +11,11 @@ class LoginController {
 
   login() {
     const user = document.getElementById('user').value
+    const pass = document.getElementById('pass').value
     const body = {
       id: '',
       user: user,
+      pass: pass,
     }
 
     fetch('/login', {
@@ -32,7 +34,7 @@ class LoginController {
       })
       .then(data => {
         console.log(`Logged in: ${data.token}`)
-        window.token = data.token
+        localStorage.setItem('access_token', data.token)
         this.setLoged(true)
       })
       .catch(error => {
@@ -40,9 +42,25 @@ class LoginController {
       })
   }
 
+  ghAuth() {
+    const popup = window.open(
+      'https://github.com/login/oauth/authorize?scope=user:email&client_id=4980e711a8dbd46fc066',
+      'GitHub Login',
+      'height=700,width=600,menubat=no'
+    )
+
+    window.addEventListener('message', function(event) {
+      console.log(event.data)
+      localStorage.setItem('access_token', event.data)
+      popup.close()
+      window.login.setLoged(true)
+    })
+  }
+
   logout() {
     this.setLoged(false)
     window.webSocket.disconnect()
+    localStorage.removeItem('access_token')
     console.log('Logged out')
   }
 }

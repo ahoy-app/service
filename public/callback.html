@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    Redirected...
+    <script>
+      const access_token = window.location.search.split('access_token=')[1]
+      window.opener.postMessage(access_token)
+    </script>
+  </body>
+</html>

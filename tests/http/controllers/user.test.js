@@ -8,29 +8,98 @@ import * as JWT from '../../../src/auth/jwt'
 import User from '../../../src/model/User'
 
 describe('User Controller', () => {
+  const secretpass = 'secretpass'
+
   describe('Login route', () => {
     beforeEach(() => {
       sinon.stub(JWT, 'signToken').returns('-mock-token')
+      JWT.jwt_secret = secretpass
     })
 
     afterEach(() => {
       sinon.restore()
     })
 
-    it('Should reject login with no user provided', async () => {
-      const req = mockRequest()
+    it('Should reject login with no user provided and no passkey provided', async () => {
+      const req = mockRequest({ body: {} })
       const res = mockResponse()
+      sinon.stub(User, 'findById').returns(Promise.resolve({}))
 
       await login(req, res)
 
       assert(res.status.calledWith(403))
       assert(res.send.calledOnce)
       const calledWith = JSON.parse(res.send.getCall(0).args[0])
-      expect(calledWith.error).to.be.equals('No user provided')
+      expect(calledWith.error).to.be.equals('Wrong pass')
+    })
+
+    it('Should reject login with unregistered user nor passkey provided', async () => {
+      const req = mockRequest({ body: { user: 'nobody' } })
+      const res = mockResponse()
+      sinon.stub(User, 'findById').returns(Promise.resolve({ undefined }))
+
+      await login(req, res)
+
+      assert(res.status.calledWith(403))
+      assert(res.send.calledOnce)
+      const calledWith = JSON.parse(res.send.getCall(0).args[0])
+      expect(calledWith.error).to.be.equals('Wrong pass')
+    })
+
+    it('Should reject login with registered user but no passkey provided', async () => {
+      const req = mockRequest({ body: { user: 'mike' } })
+      const res = mockResponse()
+      sinon.stub(User, 'findById').returns(Promise.resolve({}))
+
+      await login(req, res)
+
+      assert(res.status.calledWith(403))
+      assert(res.send.calledOnce)
+      const calledWith = JSON.parse(res.send.getCall(0).args[0])
+      expect(calledWith.error).to.be.equals('Wrong pass')
+    })
+
+    it('Should reject login with no user provided and wrong passkey provided', async () => {
+      const req = mockRequest({ body: { pass: 'wrongpass' } })
+      const res = mockResponse()
+      sinon.stub(User, 'findById').returns(Promise.resolve({}))
+
+      await login(req, res)
+
+      assert(res.status.calledWith(403))
+      assert(res.send.calledOnce)
+      const calledWith = JSON.parse(res.send.getCall(0).args[0])
+      expect(calledWith.error).to.be.equals('Wrong pass')
+    })
+
+    it('Should reject login with unregistered user and wrong passkey provided', async () => {
+      const req = mockRequest({ body: { user: 'nobody', pass: 'wrongpass' } })
+      const res = mockResponse()
+      sinon.stub(User, 'findById').returns(Promise.resolve({ undefined }))
+
+      await login(req, res)
+
+      assert(res.status.calledWith(403))
+      assert(res.send.calledOnce)
+      const calledWith = JSON.parse(res.send.getCall(0).args[0])
+      expect(calledWith.error).to.be.equals('Wrong pass')
+    })
+
+    it('Should reject login with registered user but wrong passkey provided', async () => {
+      const req = mockRequest({ body: { user: 'mike', pass: 'wrongpass' } })
+      const res = mockResponse()
+      sinon.stub(User, 'findById').returns(Promise.resolve({}))
+
+      await login(req, res)
+
+      assert(res.status.calledWith(403))
+      assert(res.send.calledOnce)
+      const calledWith = JSON.parse(res.send.getCall(0).args[0])
+      expect(calledWith.error).to.be.equals('Wrong pass')
     })
 
     it('Should reject login with unregistered user', async () => {
-      const req = mockRequest({ body: { user: 'nobody' } })
+      const req = mockRequest({ body: { user: 'nobody', pass: secretpass } })
       const res = mockResponse()
       sinon.stub(User, 'findById').returns(Promise.resolve(undefined))
 
@@ -43,7 +112,7 @@ describe('User Controller', () => {
     })
 
     it('Should accept login with registered user', async () => {
-      const req = mockRequest({ body: { user: 'mike' } })
+      const req = mockRequest({ body: { user: 'mike', pass: secretpass } })
       const res = mockResponse()
       sinon.stub(User, 'findById').returns(Promise.resolve({}))
 
