@@ -110,7 +110,8 @@ describe.skip('Db ops', () => {
 
         expect(result._doc).to.have.property('_id', room._id)
         expect(result._doc).to.have.property('members')
-        expect(result._doc.members).to.have.length(2)
+        expect(result._doc.admin).to.have.length(2)
+        expect(result._doc.members).to.have.length(0)
       })
     })
     describe('Group Room', () => {

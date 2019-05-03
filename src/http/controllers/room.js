@@ -16,6 +16,7 @@ export const getRoom = async (req, res) => {
   res.send({
     id: room._id,
     type: room.type,
+    name: room.name,
     admin: room.admin,
     members: room.members,
   })
@@ -47,7 +48,7 @@ export const getAllRooms = async (req, res) => {
   }
 
   const rooms = await user.findRooms()
-  res.send({ rooms: rooms.map(room => room._id) })
+  res.send({ rooms: rooms.map(room => ({ id: room._id, name: room.name })) })
 }
 
 export const newGroupRoom = async (req, res) => {
@@ -56,6 +57,7 @@ export const newGroupRoom = async (req, res) => {
   res.send({
     id: room._id,
     type: room.type,
+    name: room.name,
     admin: room.admin,
     members: room.members,
   })
@@ -63,10 +65,17 @@ export const newGroupRoom = async (req, res) => {
 
 export const newDuoRoom = async (req, res) => {
   let room = createDuoRoom({ members: [req.userId, req.body.user] })
+
+  if (await RoomModel.findById(room._id)) {
+    res.status(409).send('Duo room already exists')
+    return
+  }
+
   room = await room.save()
   res.send({
     id: room._id,
     type: room.type,
+    name: room.name,
     admin: room.admin,
     members: room.members,
   })

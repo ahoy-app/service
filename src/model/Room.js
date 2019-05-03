@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+import uuid from 'uuid/v1'
+import md5 from 'md5'
 
 export const ROOM_MODEL_NAME = 'Room'
 
@@ -77,7 +79,7 @@ export const RoomModel = mongoose.model(ROOM_MODEL_NAME, RoomSchema)
 export const createDuoRoom = ({ members = [] }) => {
   members.sort()
   return RoomModel({
-    _id: `hash-${members[0]}-${members[1]}`,
+    _id: md5(`${members[0]}-${members[1]}`).substring(0, 8),
     type: ROOM_TYPE_DUO,
     name: `${members[0]}-${members[1]}`,
     admin: members,
@@ -87,7 +89,7 @@ export const createDuoRoom = ({ members = [] }) => {
 
 export const createGroupRoom = ({ admin, name }) => {
   return RoomModel({
-    _id: `hash-${name}`,
+    _id: uuid().substring(0, 8),
     type: ROOM_TYPE_GROUP,
     name: name,
     admin: [admin],

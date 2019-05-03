@@ -24,7 +24,7 @@ routes.delete('/room/:roomId', verifyHTTPRequest, deleteRoom)
 routes.put('/room/:roomId/invite', verifyHTTPRequest, inviteUser)
 routes.put('/room/:roomId/kickout', verifyHTTPRequest, kickoutUser)
 
-routes.post('/room/duo', verifyHTTPRequest, newDuoRoom)
+routes.post('/rooms/duo', verifyHTTPRequest, newDuoRoom)
 
 routes.get('/user/:userId', getUser)
 
