@@ -1,31 +1,31 @@
 import express from 'express'
-import verifyHTTPRequest from './middlewares/verifyHTTPRequest'
-import { login, oauth_redirect } from './controllers/auth'
-import {
-  getRoom,
-  deleteRoom,
-  getAllRooms,
-  inviteUser,
-  kickoutUser,
-  newGroupRoom,
-  newDuoRoom,
-} from './controllers/room'
-import { getUser } from './controllers/user'
+import verifyUser from './middlewares/verifyHTTPRequest'
+import * as AuthController from './controllers/auth'
+import * as RoomController from './controllers/room'
+import * as UserController from './controllers/user'
+import * as MessageController from './controllers/message'
 
 let routes = express.Router()
 
-routes.post('/login', login)
-routes.get('/oauth/redirect', oauth_redirect)
+routes.post('/login', AuthController.login)
+routes.get('/oauth/redirect', AuthController.oauth_redirect)
 
-routes.get('/rooms', verifyHTTPRequest, getAllRooms)
-routes.post('/rooms', verifyHTTPRequest, newGroupRoom)
-routes.get('/room/:roomId', verifyHTTPRequest, getRoom)
-routes.delete('/room/:roomId', verifyHTTPRequest, deleteRoom)
-routes.put('/room/:roomId/invite', verifyHTTPRequest, inviteUser)
-routes.put('/room/:roomId/kickout', verifyHTTPRequest, kickoutUser)
+routes.post('/rooms', verifyUser, RoomController.newGroupRoom)
+routes.post('/rooms/duo', verifyUser, RoomController.newDuoRoom)
+routes.get('/rooms', verifyUser, RoomController.getAllRooms)
+routes.get('/room/:roomId', verifyUser, RoomController.getRoom)
+routes.delete('/room/:roomId', verifyUser, RoomController.deleteRoom)
+routes.put('/room/:roomId/members', verifyUser, RoomController.inviteUser) //
+routes.delete('/room/:roomId/members', verifyUser, RoomController.kickoutUser) //
+// routes.get('/room/:roomId/members', verifyUser, RoomController.getMembers)//
 
-routes.post('/rooms/duo', verifyHTTPRequest, newDuoRoom)
+routes.get('/room/:roomId/messages', verifyUser, MessageController.getMessages)
+routes.post(
+  '/room/:roomId/messages',
+  verifyUser,
+  MessageController.postTextMessage
+)
 
-routes.get('/user/:userId', getUser)
+routes.get('/user/:userId', UserController.getUser)
 
 export default routes

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import uuid from 'uuid/v1'
 
 export const MESSAGE_MODEL_NAME = 'Message'
 
@@ -17,10 +18,11 @@ function validateContent(content) {
   }
 }
 
-const Message = new mongoose.Schema({
+const MessageSchema = new mongoose.Schema({
   _id: String,
   from: { type: String, required: true },
   to: { type: String, required: true },
+  timestamp: { type: Date, required: true },
   type: {
     type: String,
     required: true,
@@ -33,4 +35,16 @@ const Message = new mongoose.Schema({
   },
 })
 
-export default mongoose.model(MESSAGE_MODEL_NAME, Message)
+const Message = mongoose.model(MESSAGE_MODEL_NAME, MessageSchema)
+export default Message
+
+export const createMessage = ({ from, to, content, type }) => {
+  return Message({
+    _id: uuid(),
+    timestamp: Date.now(),
+    from,
+    to,
+    content,
+    type,
+  })
+}
