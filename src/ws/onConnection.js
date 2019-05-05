@@ -42,8 +42,8 @@ const wsConsumerCallback = ({ channel, user }, messageEnvelope) => {
   const { room, message } = JSON.parse(messageEnvelope)
   console.log(`Received message => ${message}`)
   channel.publish(
-    'room',
-    `room.${room}`,
+    'event',
+    `room.${room}.new_message`,
     Buffer.from(JSON.stringify({ room, message, from: user.name }))
   )
 }
