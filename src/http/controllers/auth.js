@@ -1,6 +1,11 @@
 import { signToken, jwt_secret } from '../../auth/jwt'
 import User from '../../model/User'
 import { getToken, getUserInfo, getUserEmail } from '../../auth/github'
+import { user_authenticated, user_created } from '../../events/auth'
+
+const payload = user => ({
+  id: user._id,
+})
 
 export const login = async (req, res) => {
   const userId = req.body.user
@@ -20,6 +25,8 @@ export const login = async (req, res) => {
 
   if (user) {
     const token = signToken({ user: userId })
+
+    res.dispatch(user_authenticated(payload(user)))
     res.send(JSON.stringify({ token }))
   } else {
     res.status(403).send(JSON.stringify({ error: 'User not signed' }))
@@ -35,6 +42,7 @@ export const oauth_redirect = async (req, res) => {
     let user = await User.findById(user_email)
     if (user) {
       // If user was already registered
+      res.dispatch(user_authenticated(payload(user)))
       console.log('User authenticated: ', user._id)
     } else {
       // If new user in the system
@@ -49,6 +57,7 @@ export const oauth_redirect = async (req, res) => {
         ...userBase,
       })
       user = await user.save()
+      res.dispatch(user_created(payload(user)))
       console.log('New user created: ', user._id)
     }
     const token = signToken({ user: user._id })

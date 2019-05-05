@@ -12,9 +12,14 @@ const amqp_port = process.env.AMQP_PORT
 
 //Connect
 
-const connect = () => {
+const connect = async () => {
   console.log('Connecting to Rabbit MQ')
-  return Rabbit.connect(`amqp://${amqp_host}:${amqp_port}`)
+
+  const conn = await Rabbit.connect(`amqp://${amqp_host}:${amqp_port}`)
+  const ch = await conn.createChannel()
+  await ch.assertExchange('event')
+  await ch.close()
+  return conn
 }
 
 export default () =>

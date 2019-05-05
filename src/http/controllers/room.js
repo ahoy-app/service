@@ -5,6 +5,20 @@ import {
   ROOM_TYPE_GROUP,
 } from '../../model/Room'
 import User from '../../model/User'
+import {
+  room_deleted,
+  room_created,
+  user_invited,
+  user_kicked,
+} from '../../events/room'
+
+const payload = room => ({
+  id: room._id,
+  type: room.type,
+  name: room.name,
+  admin: room.admin,
+  members: room.members,
+})
 
 export const getRoom = async (req, res) => {
   const room = await RoomModel.findById(req.params.roomId)
@@ -13,13 +27,7 @@ export const getRoom = async (req, res) => {
     res.status(404).send('Room not found')
     return
   }
-  res.send({
-    id: room._id,
-    type: room.type,
-    name: room.name,
-    admin: room.admin,
-    members: room.members,
-  })
+  res.send(payload(room))
 }
 
 export const deleteRoom = async (req, res) => {
@@ -36,6 +44,7 @@ export const deleteRoom = async (req, res) => {
   }
 
   await room.delete()
+  res.dispatch(room_deleted(room._id))
   res.send('Deleted')
 }
 
@@ -53,17 +62,21 @@ export const getAllRooms = async (req, res) => {
 
 export const newGroupRoom = async (req, res) => {
   let room = createGroupRoom({ admin: req.userId, name: req.body.title })
+
   room = await room.save()
-  res.send({
-    id: room._id,
-    type: room.type,
-    name: room.name,
-    admin: room.admin,
-    members: room.members,
-  })
+  res.dispatch(room_created(payload(room)))
+  res.dispatch(user_invited(req.userId, payload(room)))
+  res.send(payload(room))
 }
 
 export const newDuoRoom = async (req, res) => {
+  const secondUser = await User.findById(req.body.user)
+
+  if (!secondUser) {
+    res.status(409).send("The target user doesn't exists")
+    return
+  }
+
   let room = createDuoRoom({ members: [req.userId, req.body.user] })
 
   if (await RoomModel.findById(room._id)) {
@@ -72,13 +85,10 @@ export const newDuoRoom = async (req, res) => {
   }
 
   room = await room.save()
-  res.send({
-    id: room._id,
-    type: room.type,
-    name: room.name,
-    admin: room.admin,
-    members: room.members,
-  })
+  res.dispatch(room_created(payload(room)))
+  res.dispatch(user_invited(req.userId, payload(room)))
+  res.dispatch(user_invited(secondUser._id, payload(room)))
+  res.send(payload(room))
 }
 
 export const inviteUser = async (req, res) => {
@@ -106,7 +116,7 @@ export const inviteUser = async (req, res) => {
     return
   }
 
-  if (!room.type == ROOM_TYPE_GROUP) {
+  if (!(room.type == ROOM_TYPE_GROUP)) {
     res.status(400).send('You can just add members to a group room')
     return
   }
@@ -114,12 +124,13 @@ export const inviteUser = async (req, res) => {
   const passiveUser = await User.findById(passiveUserId)
 
   if (!passiveUser) {
-    res.status(404).send('User not found')
+    res.status(409).send(`User ${passiveUserId} not found`)
     return
   }
 
   room.addUser(passiveUser._id)
   await room.save()
+  res.dispatch(user_invited(passiveUser._id, payload(room)))
   res.send('User added correctly')
 }
 
@@ -151,7 +162,7 @@ export const kickoutUser = async (req, res) => {
     return
   }
 
-  if (!room.type == ROOM_TYPE_GROUP) {
+  if (!(room.type == ROOM_TYPE_GROUP)) {
     res.status(400).send('You can just kickout members from a group room')
     return
   }
@@ -165,5 +176,6 @@ export const kickoutUser = async (req, res) => {
 
   room.deleteUser(passiveUser._id)
   await room.save()
+  res.dispatch(user_kicked(passiveUser._id, payload(room)))
   res.send('User kicked out correctly')
 }
