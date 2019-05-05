@@ -5,7 +5,7 @@ import {
   MESSAGE_TYPE_IMAGE,
 } from '../../model/Message'
 import { RoomModel } from '../../model/Room'
-import { uploadFile, downloadFile } from '../../config/gridfs'
+import Attachment from '../../model/Attachment'
 
 const PAGE_SIZE = 5
 
@@ -53,10 +53,20 @@ export const getFile = async (req, res) => {
     return
   }
 
-  const file = await downloadFile(req.params.fileId)
-  console.log(file)
-  res.set('Content-Disposition', `attachment; filename=${file.name}`)
-  res.send(file.buffer)
+  const file = await Attachment.findById(req.params.fileId)
+
+  if (file.metadata.roomId != room._id) {
+    res.status(403).send("This file doesn't belong to this room")
+    return
+  }
+
+  const buffer = await file.read()
+
+  res.set(
+    'Content-Disposition',
+    `attachment; filename=${file.metadata.originalname}`
+  )
+  res.send(buffer)
 }
 
 export const postTextMessage = async (req, res) => {
@@ -78,12 +88,18 @@ export const postTextMessage = async (req, res) => {
   }
 
   let message
-  console.log(req.file, req.body.content)
 
   if (req.file) {
     // With attachment
-    const uploaded_file = await uploadFile(req.file, room._id)
-    console.log(uploaded_file)
+
+    const { buffer, ...meta } = req.file
+
+    let uploaded_file = new Attachment({
+      metadata: { ...meta, roomId: room._id },
+    })
+
+    uploaded_file = await uploaded_file.write(buffer)
+
     message = createMessage({
       from: req.userId,
       to: room._id,
