@@ -28,7 +28,7 @@ describe('Room model', () => {
       var room = createDuoRoom({})
 
       room.validate(err => {
-        expect(err.errors).to.have.keys('members', 'admin')
+        expect(err.errors).to.have.keys('admin')
         done()
       })
     })
@@ -37,7 +37,7 @@ describe('Room model', () => {
       var room = createDuoRoom({ members: [] })
 
       room.validate(err => {
-        expect(err.errors).to.have.keys('members', 'admin')
+        expect(err.errors).to.have.keys('admin')
         done()
       })
     })
@@ -46,7 +46,7 @@ describe('Room model', () => {
       var room = createDuoRoom({ members: ['a'] })
 
       room.validate(err => {
-        expect(err.errors).to.have.keys('members', 'admin')
+        expect(err.errors).to.have.keys('admin')
         done()
       })
     })
@@ -60,11 +60,11 @@ describe('Room model', () => {
       })
     })
 
-    it('Should be invalid if just more than two members are provided', done => {
+    it('Should be invalid if more than two members are provided', done => {
       var room = createDuoRoom({ members: ['a', 'b', 'c'] })
 
       room.validate(err => {
-        expect(err.errors).to.have.keys('members')
+        expect(err.errors).to.have.keys('admin')
         done()
       })
     })

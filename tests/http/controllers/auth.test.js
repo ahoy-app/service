@@ -3,11 +3,11 @@ import { assert, expect } from 'chai'
 
 import { mockRequest, mockResponse } from '../../utils/mock-req-res'
 
-import { login } from '../../../src/http/controllers/user'
+import { login } from '../../../src/http/controllers/auth'
 import * as JWT from '../../../src/auth/jwt'
 import User from '../../../src/model/User'
 
-describe('User Controller', () => {
+describe('Auth Controller', () => {
   const secretpass = 'secretpass'
 
   describe('Login route', () => {
