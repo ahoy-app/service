@@ -1,5 +1,6 @@
 import express from 'express'
 import verifyUser from './middlewares/verifyHTTPRequest'
+import upload from './middlewares/fileUpload'
 import * as AuthController from './controllers/auth'
 import * as RoomController from './controllers/room'
 import * as UserController from './controllers/user'
@@ -20,9 +21,12 @@ routes.delete('/room/:roomId/members', verifyUser, RoomController.kickoutUser) /
 // routes.get('/room/:roomId/members', verifyUser, RoomController.getMembers)//
 
 routes.get('/room/:roomId/messages', verifyUser, MessageController.getMessages)
+routes.get('/room/:roomId/file/:fileId', verifyUser, MessageController.getFile)
+
 routes.post(
   '/room/:roomId/messages',
   verifyUser,
+  upload.single('content'),
   MessageController.postTextMessage
 )
 

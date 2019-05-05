@@ -6,7 +6,7 @@ export const MESSAGE_MODEL_NAME = 'Message'
 export const MESSAGE_TYPE_TEXT = 'text'
 export const MESSAGE_TYPE_IMAGE = 'image'
 
-export const FILE_REGEXP = /^((http(s)?)|(s3)):\/\/[^.]*/
+export const FILE_REGEXP = /.*/
 function validateContent(content) {
   switch (this.type) {
     case MESSAGE_TYPE_TEXT:
