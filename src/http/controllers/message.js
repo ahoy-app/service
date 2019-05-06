@@ -16,6 +16,7 @@ const payload = message => ({
   to: message.to,
   content: message.content,
   type: message.type,
+  timestamp: message.timestamp,
 })
 
 export const getMessages = async (req, res) => {
@@ -70,6 +71,41 @@ export const getFile = async (req, res) => {
     `attachment; filename=${file.metadata.originalname}`
   )
   res.send(buffer)
+}
+
+export const getBroadcastMessages = async (req, res) => {
+  const find = req.body.before
+    ? Message.find({
+        to: 'ahoy',
+        timestamp: { $lte: req.body.before },
+      })
+    : Message.find({ to: 'ahoy' })
+
+  const messages = await find.limit(PAGE_SIZE).sort({ timestamp: 'desc' })
+
+  res.send(messages.map(message => payload(message)))
+}
+
+export const broadcastMessage = async (req, res) => {
+  if (!req.admin) {
+    res.status(403).send('Just the admin can broadcast')
+    return
+  }
+
+  const message = createMessage({
+    from: req.userId,
+    to: 'ahoy',
+    content: req.body.content,
+    type: MESSAGE_TYPE_TEXT,
+  })
+
+  await message.save()
+  res.dispatch(new_message(payload(message)))
+  res.send({
+    id: message._id,
+    timestamp: message.timestamp,
+    content: message.content,
+  })
 }
 
 export const postMessage = async (req, res) => {

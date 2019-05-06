@@ -14,6 +14,7 @@ const decodeJWT = (props, next) => {
       } else {
         if (decoded.user) {
           req.userId = decoded.user
+          req.admin = decoded.admin ? true : false
           next()
         } else {
           done(false)

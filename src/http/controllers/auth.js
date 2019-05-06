@@ -24,7 +24,9 @@ export const login = async (req, res) => {
   const user = await User.findById(userId)
 
   if (user) {
-    const token = signToken({ user: userId })
+    const toBeSigned =
+      user.role == 'admin' ? { user: userId, admin: true } : { user: userId }
+    const token = signToken(toBeSigned)
 
     res.dispatch(user_authenticated(payload(user)))
     res.send(JSON.stringify({ token }))
@@ -60,7 +62,7 @@ export const oauth_redirect = async (req, res) => {
       res.dispatch(user_created(payload(user)))
       console.log('New user created: ', user._id)
     }
-    const token = signToken({ user: user._id })
+    const token = signToken({ user: user._id, admin: user.role == 'admin' })
     res.redirect(`/callback.html?access_token=${token}`)
   } catch (error) {
     console.log(error)
