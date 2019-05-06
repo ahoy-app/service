@@ -6,8 +6,17 @@ import {
 } from '../../model/Message'
 import { RoomModel } from '../../model/Room'
 import Attachment from '../../model/Attachment'
+import { new_message } from '../../events/message'
 
 const PAGE_SIZE = 5
+
+const payload = message => ({
+  id: message._id,
+  from: message.from,
+  to: message.to,
+  content: message.content,
+  type: message.type,
+})
 
 export const getMessages = async (req, res) => {
   const room = await RoomModel.findById(req.params.roomId)
@@ -31,13 +40,7 @@ export const getMessages = async (req, res) => {
 
   const messages = await find.limit(PAGE_SIZE).sort({ timestamp: 'desc' })
 
-  res.send(
-    messages.map(message => ({
-      id: message._id,
-      timestamp: message.timestamp,
-      content: message.content,
-    }))
-  )
+  res.send(messages.map(message => payload(message)))
 }
 
 export const getFile = async (req, res) => {
@@ -69,7 +72,7 @@ export const getFile = async (req, res) => {
   res.send(buffer)
 }
 
-export const postTextMessage = async (req, res) => {
+export const postMessage = async (req, res) => {
   const room = await RoomModel.findById(req.params.roomId)
 
   if (!room) {
@@ -116,6 +119,7 @@ export const postTextMessage = async (req, res) => {
     })
   }
   message = await message.save()
+  res.dispatch(new_message(payload(message)))
   res.send({
     id: message._id,
     timestamp: message.timestamp,

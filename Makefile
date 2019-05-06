@@ -30,7 +30,7 @@ lint:
 	yarn lint
 
 rabbit:
-	docker run --rm -p 5672:5672 --name ahoy-rabbit -d rabbitmq:3
+	docker run --rm -p 5672:5672 -p 15672:15672 --name ahoy-rabbit -d rabbitmq:3-management
 	touch rabbit
 
 mongo:

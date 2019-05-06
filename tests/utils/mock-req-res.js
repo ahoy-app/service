@@ -28,6 +28,7 @@ export const mockResponse = (options = {}) => {
     set: spy(),
     type: spy(),
     get: stub(),
+    dispatch: stub(),
     ...options,
   }
   res.status = stub().returns(res)

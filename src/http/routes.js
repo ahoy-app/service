@@ -27,7 +27,7 @@ routes.post(
   '/room/:roomId/messages',
   verifyUser,
   upload.single('content'),
-  MessageController.postTextMessage
+  MessageController.postMessage
 )
 
 routes.get('/user/:userId', UserController.getUser)

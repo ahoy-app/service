@@ -63,7 +63,6 @@ class WebSocketController {
   }
 
   showMessage(message) {
-    console.log(message)
     var response = document.getElementById('response')
     var p = document.createElement('p')
     p.style.wordWrap = 'break-word'
@@ -76,10 +75,10 @@ class WebSocketController {
         .map(r => r.trim())
       this.setRoomOptions(rooms)
     }
-
+    console.log(content)
     p.appendChild(
       document.createTextNode(
-        `#${content.room}: @${content.from || 'admin'}:  ${content.message}`
+        `#${content.key}: ${JSON.stringify(content.body)}`
       )
     )
     response.appendChild(p)

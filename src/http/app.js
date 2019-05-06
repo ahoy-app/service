@@ -14,6 +14,21 @@ app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+// Dispatch
+app.use((req, res, next) => {
+  res.dispatch = ({ key, body }) => {
+    app
+      .get('amqp')
+      .createChannel()
+      .then(ch => {
+        ch.publish('event', key, Buffer.from(JSON.stringify(body)))
+        ch.close()
+        console.log({ key, body })
+      })
+  }
+  next()
+})
+
 // Error handling
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {

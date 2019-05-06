@@ -7,18 +7,29 @@ export const createChannel = (props, next) => {
   })
 }
 
+export const createDispatch = (props, next) => {
+  const { channel } = props
+  props.dispatch = ({ key, body }) => {
+    channel.publish('event', key, Buffer.from(JSON.stringify(body)))
+    console.log({ key, body })
+  }
+  next()
+}
+
 export const createQueues = (props, next) => {
   const { user, channel } = props // TODO: Fix this coupling
-  Promise.all([
-    channel.assertExchange('room', 'topic', { durable: true }),
-    channel.assertQueue('', { exclusive: true, autoDelete: true }),
-  ])
-    .then(([, q]) => {
-      Promise.all[
+  channel
+    .assertQueue('', { exclusive: true, autoDelete: true })
+    .then(q => {
+      props.queue = q.queue
+      return Promise.all(
         user.rooms.map(room =>
-          channel.bindQueue(q.queue, 'room', `room.${room._id}`)
+          channel.bindQueue(q.queue, 'event', `room.${room._id}.#`)
         )
-      ]
+      )
+    })
+    .then(() => {
+      channel.bindQueue(props.queue, 'event', `user.${user._id}.#`)
     })
     .then(next)
 }
