@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import { ROOM_MODEL_NAME } from './Room'
+import { ROOM_MODEL_NAME, ROOM_TYPE_SYSTEM } from './Room'
 
 export const USER_MODEL_NAME = 'User'
 
@@ -23,7 +23,11 @@ const User = new mongoose.Schema({
 
 User.methods.findRooms = function(cb) {
   const promise = this.model(ROOM_MODEL_NAME).find({
-    $or: [{ members: this._id }, { admin: this._id }],
+    $or: [
+      { members: this._id },
+      { admin: this._id },
+      { type: ROOM_TYPE_SYSTEM },
+    ],
   })
 
   if (cb) {

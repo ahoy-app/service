@@ -20,6 +20,16 @@ routes.put('/room/:roomId/members', verifyUser, RoomController.inviteUser) //
 routes.delete('/room/:roomId/members', verifyUser, RoomController.kickoutUser) //
 // routes.get('/room/:roomId/members', verifyUser, RoomController.getMembers)//
 
+routes.get(
+  '/room/ahoy/messages',
+  verifyUser,
+  MessageController.getBroadcastMessages
+)
+routes.post(
+  '/room/ahoy/messages',
+  verifyUser,
+  MessageController.broadcastMessage
+)
 routes.get('/room/:roomId/messages', verifyUser, MessageController.getMessages)
 routes.get('/room/:roomId/file/:fileId', verifyUser, MessageController.getFile)
 
