@@ -1,7 +1,12 @@
 import Middleware from '../utils/middleware'
-import { amqpConsumer, createChannel, createQueues } from './amqp'
+import {
+  amqpConsumer,
+  createChannel,
+  createDispatch,
+  createQueues,
+} from './amqp'
 import { wsConsumer } from './ws'
-
+import { new_message } from '../events/message'
 import User from '../model/User'
 
 const onConnection = new Middleware()
@@ -29,22 +34,43 @@ const extractUserRooms = (props, next) => {
 
 onConnection.use(extractUserInfo, extractUserRooms)
 
-onConnection.use(createChannel, createQueues)
+onConnection.use(createChannel, createDispatch, createQueues)
 
-const amqpConsumerCallback = ({ ws, channel }, message) => {
-  ws.send(message.content.toString())
-  channel.ack(message)
+const amqpConsumerCallback = ({ ws, channel, queue }, message) => {
+  const key = message.fields.routingKey
+  const body = JSON.parse(message.content.toString())
+  console.log('QUEUE:', queue)
+  if (key.match(/user\.[^.]*\.invited/)) {
+    channel.bindQueue(queue, 'event', `room.${body.id}.#`).then(() => {
+      console.log('AAAAAAAAAAAA')
+      ws.send(JSON.stringify({ key, body }))
+      channel.ack(message)
+    })
+  } else if (key.match(/user\.[^.]*\.kicked/)) {
+    channel.unbindQueue(queue, 'event', `room.${body.id}.#`).then(() => {
+      console.log('AAAAAAAAAAAA')
+      ws.send(JSON.stringify({ key, body }))
+      channel.ack(message)
+    })
+  } else {
+    ws.send(JSON.stringify({ key, body }))
+    channel.ack(message)
+  }
 }
 onConnection.use(amqpConsumer(amqpConsumerCallback))
 
 // WS Consume Messages
-const wsConsumerCallback = ({ channel, user }, messageEnvelope) => {
+const wsConsumerCallback = ({ dispatch, user }, messageEnvelope) => {
   const { room, message } = JSON.parse(messageEnvelope)
   console.log(`Received message => ${message}`)
-  channel.publish(
-    'event',
-    `room.${room}.new_message`,
-    Buffer.from(JSON.stringify({ room, message, from: user.name }))
+  dispatch(
+    new_message({
+      id: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      from: user._id,
+      to: room,
+      content: message,
+      type: 'text',
+    })
   )
 }
 onConnection.use(wsConsumer(wsConsumerCallback))

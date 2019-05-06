@@ -17,7 +17,7 @@ const connect = async () => {
 
   const conn = await Rabbit.connect(`amqp://${amqp_host}:${amqp_port}`)
   const ch = await conn.createChannel()
-  await ch.assertExchange('event')
+  await ch.assertExchange('event', 'topic', { durable: true })
   await ch.close()
   return conn
 }
