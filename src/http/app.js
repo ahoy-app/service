@@ -39,7 +39,7 @@ app.use((err, req, res, next) => {
 })
 
 // Static files
-app.use(express.static('public'))
+// app.use(express.static('public'))
 app.use('/', routes)
 
 export default app
