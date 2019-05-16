@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon --exec babel-node src/mono-server.js",
-    "start:prod": "babel-node server.js --presets es2015",
+    "start:prod": "babel-node src/mono-server.js",
     "test": "nodemon --exec mocha tests/* --recursive --require @babel/register",
     "test:ci": "mocha tests/* --recursive --require @babel/register",
     "initDb": "babel-node init/init.js",
