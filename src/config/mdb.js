@@ -8,10 +8,10 @@ import User from '../model/User'
 //Config
 dotenv.config()
 const mdb_host = process.env.MDB_HOST
-const mdb_port = process.env.MDB_PORT
+// const mdb_port = process.env.MDB_PORT
 const mdb_name = process.env.MDB_NAME
-// const mdb_user = process.env.MDB_USER
-// const mdb_pass = process.env.MDB_PASS
+const mdb_user = process.env.MDB_USER
+const mdb_pass = process.env.MDB_PASS
 
 const assertPrerequirements = async () => {
   let room = await RoomModel.findById('ahoy')
@@ -44,7 +44,7 @@ const assertPrerequirements = async () => {
 const connect = async () => {
   console.log('Connecting to MongoDB')
   const connection = await mongoose.connect(
-    `mongodb://${mdb_host}:${mdb_port}/${mdb_name}`,
+    `mongodb+srv://${mdb_user}:${mdb_pass}@${mdb_host}/${mdb_name}?retryWrites=true`,
     {
       useNewUrlParser: true,
       autoReconnect: true,

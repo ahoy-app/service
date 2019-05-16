@@ -8,7 +8,7 @@ export const jwt_secret = process.env.JWT_SECRET
 
 export const signToken = payload => {
   return jwt.sign(payload, jwt_secret, {
-    expiresIn: '20m', // expires in 24 hours
+    expiresIn: '1000m', // expires in 24 hours
   })
 }
 

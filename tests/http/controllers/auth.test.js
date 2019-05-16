@@ -122,7 +122,7 @@ describe('Auth Controller', () => {
       assert(res.send.calledOnce)
       assert(JWT.signToken.calledWith({ user: 'mike' }))
       const responseBody = JSON.parse(res.send.getCall(0).args[0])
-      expect(responseBody.token).to.be.equals('-mock-token')
+      expect(responseBody.access_token).to.be.equals('-mock-token')
     })
   })
 })

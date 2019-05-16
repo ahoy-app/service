@@ -40,6 +40,7 @@ routes.post(
   MessageController.postMessage
 )
 
+routes.get('/user', verifyUser, UserController.getLoggedUser)
 routes.get('/user/:userId', UserController.getUser)
 
 export default routes

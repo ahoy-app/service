@@ -1,5 +1,6 @@
 import express from 'express'
 import morgan from 'morgan'
+import cors from 'cors'
 import bodyParser from 'body-parser'
 
 import routes from './routes'
@@ -9,6 +10,7 @@ const app = express()
 
 // Logging
 app.use(morgan('dev'))
+app.use(cors())
 
 // Body parsing
 app.use(bodyParser.urlencoded({ extended: true }))
