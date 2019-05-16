@@ -1,10 +1,16 @@
 import { signToken, jwt_secret } from '../../auth/jwt'
 import User from '../../model/User'
-import { getToken, getUserInfo, getUserEmail } from '../../auth/github'
+import {
+  getToken,
+  getUserInfo,
+  getUserEmail,
+  CALLBACK_URI,
+} from '../../auth/github'
 import { user_authenticated, user_created } from '../../events/auth'
 
 const payload = user => ({
   id: user._id,
+  role: user.role,
 })
 
 export const login = async (req, res) => {
@@ -22,14 +28,13 @@ export const login = async (req, res) => {
   }
 
   const user = await User.findById(userId)
-
   if (user) {
     const toBeSigned =
       user.role == 'admin' ? { user: userId, admin: true } : { user: userId }
-    const token = signToken(toBeSigned)
+    const access_token = signToken(toBeSigned)
 
     res.dispatch(user_authenticated(payload(user)))
-    res.send(JSON.stringify({ token }))
+    res.send(JSON.stringify({ access_token }))
   } else {
     res.status(403).send(JSON.stringify({ error: 'User not signed' }))
   }
@@ -63,7 +68,7 @@ export const oauth_redirect = async (req, res) => {
       console.log('New user created: ', user._id)
     }
     const token = signToken({ user: user._id, admin: user.role == 'admin' })
-    res.redirect(`/callback.html?access_token=${token}`)
+    res.redirect(`${CALLBACK_URI}/?access_token=${token}`)
   } catch (error) {
     console.log(error)
     res.status(404).send('Error authenticating')

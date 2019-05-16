@@ -40,13 +40,13 @@ const amqpConsumerCallback = ({ ws, channel, queue }, message) => {
   const key = message.fields.routingKey
   const body = JSON.parse(message.content.toString())
   console.log('QUEUE:', queue)
-  if (key.match(/user\.[^.]*\.invited/)) {
+  if (key.match(/user\..*\.invited/)) {
     channel.bindQueue(queue, 'event', `room.${body.id}.#`).then(() => {
       console.log('AAAAAAAAAAAA')
       ws.send(JSON.stringify({ key, body }))
       channel.ack(message)
     })
-  } else if (key.match(/user\.[^.]*\.kicked/)) {
+  } else if (key.match(/user\..*\.kicked/)) {
     channel.unbindQueue(queue, 'event', `room.${body.id}.#`).then(() => {
       console.log('AAAAAAAAAAAA')
       ws.send(JSON.stringify({ key, body }))
@@ -97,14 +97,16 @@ onConnection.use(wsOnClose, wsOnError)
 
 // Function structure needed by WebSocket on('connection')
 export default extras => (ws, req) => {
-  onConnection.go({ ws, req, ...extras }, ({ ws, user }) =>
-    ws.send(
-      JSON.stringify({
-        room: 'server',
-        message: `Wellcome @${user.name} to => ${user.rooms.map(
-          room => room._id
-        )}`,
-      })
-    )
+  onConnection.go(
+    { ws, req, ...extras },
+    (/*{ ws, user }*/) => {}
+    // ws.send(
+    //   JSON.stringify({
+    //     room: 'server',
+    //     message: `Wellcome @${user.name} to => ${user.rooms.map(
+    //       room => room._id
+    //     )}`,
+    //   })
+    // )
   )
 }

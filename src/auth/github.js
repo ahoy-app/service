@@ -5,6 +5,7 @@ dotenv.config()
 
 const CLIENT_ID = process.env.GITHUB_CLIENT_ID
 const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
+export const CALLBACK_URI = process.env.GITHUB_CALLBACK_URI
 
 export const getToken = async code => {
   const json = await fetch(`https://github.com/login/oauth/access_token`, {
