@@ -14,7 +14,7 @@ Promise.all([mdb(), amqp()])
     const server = http.createServer(app)
     createWSServer(server, { mdb: mdb_conn, amqp: amqp_conn })
 
-    const server_port = process.env.PORT || 3000
+    const server_port = process.env.PORT || 8080
 
     server.listen(server_port, () => {
       console.log(`Server started on port ${server.address().port}`)
