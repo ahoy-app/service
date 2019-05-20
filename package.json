@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon --exec babel-node src/mono-server.js",
     "start:prod": "yarn build && babel-node build/mono-server.js",
-    "build":"babel -d ./build ./src -s",
+    "build": "babel -d ./build ./src -s",
     "clean": "rm -rf build && mkdir build",
     "test": "nodemon --exec mocha tests/* --recursive --require @babel/register",
     "test:ci": "mocha tests/* --recursive --require @babel/register",
@@ -23,6 +23,7 @@
     "cors": "^2.8.5",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
+    "express-mung": "^0.5.1",
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.2.1",
     "mongoose": "^5.5.2",

@@ -34,7 +34,7 @@ class LoginController {
       })
       .then(data => {
         console.log(`Logged in: ${data.token}`)
-        localStorage.setItem('access_token', data.token)
+        localStorage.setItem('access_token', data.access_token)
         this.setLoged(true)
       })
       .catch(error => {
