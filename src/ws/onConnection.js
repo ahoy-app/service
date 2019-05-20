@@ -8,6 +8,7 @@ import {
 import { wsConsumer } from './ws'
 import { new_message } from '../events/message'
 import User from '../model/User'
+import { censoreMessage } from '../http/controllers/censorship'
 
 const onConnection = new Middleware()
 
@@ -42,13 +43,16 @@ const amqpConsumerCallback = ({ ws, channel, queue }, message) => {
   console.log('QUEUE:', queue)
   if (key.match(/user\..*\.invited/)) {
     channel.bindQueue(queue, 'event', `room.${body.id}.#`).then(() => {
-      console.log('AAAAAAAAAAAA')
       ws.send(JSON.stringify({ key, body }))
       channel.ack(message)
     })
   } else if (key.match(/user\..*\.kicked/)) {
     channel.unbindQueue(queue, 'event', `room.${body.id}.#`).then(() => {
-      console.log('AAAAAAAAAAAA')
+      ws.send(JSON.stringify({ key, body }))
+      channel.ack(message)
+    })
+  } else if (key.match(/room\..*\.new_message/)) {
+    censoreMessage(body).then(body => {
       ws.send(JSON.stringify({ key, body }))
       channel.ack(message)
     })

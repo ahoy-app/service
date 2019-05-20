@@ -4,6 +4,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 
 import routes from './routes'
+import censoreMessages from './middlewares/censoreMessages'
 
 // Express
 const app = express()
@@ -15,6 +16,9 @@ app.use(cors())
 // Body parsing
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+
+// Censorship
+app.use(censoreMessages)
 
 // Dispatch
 app.use((req, res, next) => {
